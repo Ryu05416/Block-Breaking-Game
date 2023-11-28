@@ -25,8 +25,8 @@
 				const ctx=canvas.getContext("2d"); //2Dグラフィックが描画できるようにメソッドを実行し、ctxに2D描画コンテキストを格納
 
 				//ボールの初期位置
-				let x=canvas.width / 2;
-				let y=canvas.height - 30;
+				let x=canvas.width/2;
+				let y=canvas.height-30;
 
 				//ボールの毎フレームの移動px値
 				let dx=2;
@@ -53,12 +53,12 @@
 				const brickOffsetTop=30; //キャンバス上端からの相対位置
 				const brickOffsetLeft=30; //キャンバス左端からの相対位置
 
-				//[[{},{},{}],[{},{},{}],[{},{},{}]]
+				//次の構造を作成→ [[{},{},{}],[{},{},{}],[{},{},{}]]
 				const bricks=[]; //大元の配列
 				for (let c=0; c<brickColumnCount; c++) { //カラムの数まで繰り返し
 					bricks[c]=[]; //配列の中に配列を作成
 					for (let r=0; r<brickRowCount; r++) { //レコードの数まで繰り返し
-						bricks[c][r]={x:0, y:0}; //配列の中の配列にオブジェクトを作成
+						bricks[c][r]={x: 0, y: 0, status: 1}; //配列の中の配列にオブジェクトを作成、座標の初期値、描画のフラグを定義する
 					}
 				}
 				
@@ -85,6 +85,7 @@
 				function drawBricks() {
 					for (let c=0; c<brickColumnCount; c++) {
 						for (let r=0; r<brickRowCount; r++) {
+							if (bricks[c][r].status===1) { //ステータスが1の場合描画する
 							const brickX=c*(brickWidth+brickPadding)+brickOffsetLeft; //x座標の指定
 							const brickY=r*(brickHeight+brickPadding)+brickOffsetTop; //y座標の指定
 							bricks[c][r].x=brickX; //二次元配列にx座標を格納
@@ -95,6 +96,7 @@
 							ctx.fillStyle="#0095DD";
 							ctx.fill();
 							ctx.closePath();
+							}
 						}
 					}
 				}
@@ -105,16 +107,17 @@
 					drawBricks();
 					drawBall();
 					drawPaddle();
-					x +=dx;
-					y +=dy;
+					collisionDetection();
+					x+=dx;
+					y+=dy;
 
 					//壁との衝突判定
 					//半径を考慮することで、ボールがめり込まない
-					if (x+dx > canvas.width-ballRadius || x+dx < ballRadius) {
+					if (x+dx>canvas.width-ballRadius || x+dx<ballRadius) {
 						dx=-dx;
 					}
 
-					if (y+dy < ballRadius) {
+					if (y+dy<ballRadius) {
 						dy=-dy;
 						//ボールが下端に触れたらゲームオーバー
 					}else if (y+dy>canvas.height-ballRadius) {
@@ -130,9 +133,9 @@
 
 					//パドルの移動
 					if (rightPressed) {
-						paddleX=Math.min(paddleX+7,canvas.width-paddleWidth);
+						paddleX=Math.min(paddleX+7, canvas.width-paddleWidth);
 					}else if (leftPressed) {
-						paddleX=Math.max(paddleX-7,0);
+						paddleX=Math.max(paddleX-7, 0);
 					}
 				}
 
@@ -143,19 +146,34 @@
 				//リスナーの関数
 				//制御ボタンのフラグを変更する
 				function keyDownHandler(e) {
-					if (e.key==="Right"||e.key==="ArrowRight") {
+					if (e.key==="Right" || e.key==="ArrowRight") {
 						rightPressed=true;
-					}else if (e.key==="Left"||e.key==="ArrowLeft") {
+					}else if (e.key==="Left" || e.key==="ArrowLeft") {
 						leftPressed=true;
 					}
 				}	
 				function keyUpHandler(e) {
-					if (e.key === "Right" || e.key === "ArrowRight") {
-						rightPressed = false;
-					} else if (e.key === "Left" || e.key === "ArrowLeft") {
-						leftPressed = false;
+					if (e.key==="Right" || e.key==="ArrowRight") {
+						rightPressed=false;
+					} else if (e.key==="Left" || e.key==="ArrowLeft") {
+						leftPressed=false;
 					}
-				}			
+				}
+				
+				//衝突検出
+				function collisionDetection() {
+					for (let c=0; c<brickColumnCount; c++) {
+						for (let r=0; r<brickRowCount; r++) {
+							const b=bricks[c][r]; //オブジェクトを格納
+							if (b.status===1) { //ステータスが1の場合
+								if (x>b.x && x<b.x+brickWidth && y>b.y && y<b.y+brickHeight) { //ボールの中心がパドル内部にあったら
+								dy=-dy; //y座標を逆転させる
+								b.status=0; //ステータスを0にしてレンガを削除する
+								}
+							}
+						}
+					}
+				}
 
 				//draw関数を無限に実行する、単位はミリ秒、変数に格納しても実行される
 				const interval=setInterval(draw, 10);
