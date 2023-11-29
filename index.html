@@ -6,7 +6,7 @@
 				<style>
 					* {
 						padding: 0;
-						margin:0;
+						margin: 0;
 					}
 					canvas {
 						background: #eee;
@@ -52,6 +52,9 @@
 				const brickPadding=10; //レンガの間隔
 				const brickOffsetTop=30; //キャンバス上端からの相対位置
 				const brickOffsetLeft=30; //キャンバス左端からの相対位置
+
+				//スコアの変数
+				let score=0;
 
 				//次の構造を作成→ [[{},{},{}],[{},{},{}],[{},{},{}]]
 				const bricks=[]; //大元の配列
@@ -107,6 +110,7 @@
 					drawBricks();
 					drawBall();
 					drawPaddle();
+					drawScore();
 					collisionDetection();
 					x+=dx;
 					y+=dy;
@@ -125,7 +129,7 @@
 							dy=-dy;
 						}else {
 							alert("GAME OVER");
-							document.location.reload();
+							document.location.reload(); //ドキュメントのURLをリロードする
 							clearInterval(interval); //chromeがゲームを終了するには必要
 
 						}
@@ -169,10 +173,23 @@
 								if (x>b.x && x<b.x+brickWidth && y>b.y && y<b.y+brickHeight) { //ボールの中心がパドル内部にあったら
 								dy=-dy; //y座標を逆転させる
 								b.status=0; //ステータスを0にしてレンガを削除する
+								score++;
+								if (score===brickRowCount*brickColumnCount) {
+									alert("YOU WIN, CONGRATULATIONS!"); //ゲームオーバーと同様のロジック
+									document.location.reload();
+									clearInterval(interval);
+								}
 								}
 							}
 						}
 					}
+				}
+
+				//スコアを描画
+				function drawScore() {
+					ctx.font="16px Arial"; //フォントの大きさと種類を指定
+					ctx.fillStyle="#0095DD"; //フォントの色を指定
+					ctx.fillText(`Score: ${score}`, 8, 20); //配置する文章とその位置を指定
 				}
 
 				//draw関数を無限に実行する、単位はミリ秒、変数に格納しても実行される
