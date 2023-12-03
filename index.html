@@ -139,7 +139,7 @@
 					if (!lives) { //0はfalse,それ以外の数字はtrueとなる
 						alert("GAME OVER");
 						document.location.reload(); //ドキュメントのURLをリロードする
-						clearInterval(interval); //chromeがゲームを終了するには必要
+						//clearInterval(interval); //chromeがゲームを終了するには必要
 					} else { //パドルとボールを初期値に戻す
 						x = canvas.width / 2;
 						y = canvas.height - 30;
@@ -156,6 +156,7 @@
 			} else if (leftPressed) {
 				paddleX = Math.max(paddleX - 7, 0);
 			}
+			requestAnimationFrame(draw);
 		}
 
 		//イベント発生時のリスナーへの通知
@@ -201,7 +202,7 @@
 							if (score === brickRowCount * brickColumnCount) {
 								alert("YOU WIN, CONGRATULATIONS!"); //ゲームオーバーと同様のロジック
 								document.location.reload();
-								clearInterval(interval);
+								//clearInterval(interval);
 							}
 						}
 					}
@@ -224,7 +225,8 @@
 		}
 
 		//draw関数を無限に実行する、単位はミリ秒、変数に格納しても実行される
-		const interval = setInterval(draw, 10);
+		//const interval = setInterval(draw, 10);
+		draw();
 	</script>
 </body>
 
