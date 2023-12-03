@@ -146,6 +146,7 @@
 				//イベント発生時のリスナーへの通知
 				document.addEventListener("keydown", keyDownHandler, false); //イベントの種類、リスナー、気にしない
 				document.addEventListener("keyup", keyUpHandler, false);
+				document.addEventListener("mousemove",mouseMoveHandler, false);
 
 				//リスナーの関数
 				//制御ボタンのフラグを変更する
@@ -161,6 +162,14 @@
 						rightPressed=false;
 					} else if (e.key==="Left" || e.key==="ArrowLeft") {
 						leftPressed=false;
+					}
+				}
+
+				//マウスの制御関数
+				function mouseMoveHandler(e) {
+					const relativeX=e.clientX-canvas.offsetLeft; //ビューポート(ウィンドウ)の左端からの水平値と、キャンバスの左端とビューポートの左端間の距離の差
+					if (relativeX>0 && relativeX<canvas.width) { //キャンバス内にポインタがあれば
+						paddleX=relativeX-paddleWidth/2; //ポインタがパドルの中央と連動して動く
 					}
 				}
 				
